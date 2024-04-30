@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute="MainTree">
+    <!-- ////////// -->
+    <BehaviorTree ID="MainTree">
+        <Control ID="PipelineSequence" name="NavigateWithReplanning">
+            <Decorator ID="RateController" hz="1.0">
+                <Sequence>
+                    <Action ID="ClearEntireCostmap" server_timeout="" service_name="local_costmap/clear_entirely_local_costmap"/>
+                    <Decorator ID="GoalUpdater" input_goal="{goal}" output_goal="{updated_goal}">
+                        <Control ID="RecoveryNode" number_of_retries="1">
+                            <Action ID="ComputePathToPose" goal="{updated_goal}" path="{path}" planner_id="GridBased"/>
+                            <Action ID="ClearEntireCostmap" server_timeout="" service_name="global_costmap/clear_entirely_global_costmap"/>
+                        </Control>
+                    </Decorator>
+                    <Action ID="TruncatePath" distance="1.0" input_path="{path}" output_path="{truncated_path}"/>
+                </Sequence>
+            </Decorator>
+            <KeepRunningUntilFailure>
+                <Action ID="FollowPath" controller_id="FollowPath" goal_checker_id="" path="{truncated_path}" server_name="" server_timeout=""/>
+            </KeepRunningUntilFailure>
+        </Control>
+    </BehaviorTree>

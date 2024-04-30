@@ -1,0 +1,6 @@
+string text
+string language "en"
+float32 volume 1.0
+float32 rate 0.4
+---
+---
